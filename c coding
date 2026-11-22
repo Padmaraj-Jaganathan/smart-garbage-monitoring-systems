@@ -1,0 +1,35 @@
+
+CREATE DATABASE smart_garbage_db;
+
+USE smart_garbage_db;
+
+CREATE TABLE garbage_readings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    bin_id VARCHAR(20) NOT NULL,
+    fill_percentage DECIMAL(5,2),
+    distance_cm DECIMAL(6,2),
+    status VARCHAR(20),
+    recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- View all readings
+SELECT * FROM garbage_readings;
+
+-- Find full bins
+SELECT *
+FROM garbage_readings
+WHERE fill_percentage >= 90;
+
+-- Latest reading for each bin
+SELECT *
+FROM garbage_readings AS g
+WHERE recorded_at = (
+    SELECT MAX(recorded_at)
+    FROM garbage_readings
+    WHERE bin_id = g.bin_id
+);
+
+-- Average fill level
+SELECT bin_id, AVG(fill_percentage)
+FROM garbage_readings
+GROUP BY bin_id;
